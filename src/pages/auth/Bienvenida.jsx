@@ -29,7 +29,14 @@ export default function Bienvenida() {
     e.preventDefault();
     setError('');
 
-    if (!rol) {
+    // `perfil.rol` es la fuente de verdad cuando ya viene preseleccionado:
+    // llega de forma asíncrona después del primer render, así que el estado
+    // local `rol` puede quedarse en null aunque el texto de arriba ya diga
+    // cuál es tu rol. Se prioriza perfil.rol y se cae a `rol` solo cuando
+    // nadie lo preseleccionó y la persona lo eligió a mano en el fieldset.
+    const rolFinal = perfil?.rol || rol;
+
+    if (!rolFinal) {
       setError('Elige qué vienes a hacer.');
       return;
     }
@@ -42,7 +49,7 @@ export default function Bienvenida() {
     try {
       const { error: err } = await supabase.rpc('confirmar_perfil', {
         p_nombre: nombre.trim(),
-        p_rol: rol,
+        p_rol: rolFinal,
       });
       if (err) throw err;
       await refrescar();
@@ -110,7 +117,7 @@ export default function Bienvenida() {
           <p className="text-[12.5px] text-mut">
             Entras como{' '}
             <strong className="font-medium text-paper">
-              {rol === 'clipero' ? 'clipero' : 'emprendedor'}
+              {perfil?.rol === 'clipero' ? 'clipero' : 'emprendedor'}
             </strong>
             . Si no es lo que querías, escríbenos antes de publicar u ofertar.
           </p>
