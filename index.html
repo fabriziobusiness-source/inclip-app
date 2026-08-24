@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Inclip — Tu panel</title>
+<meta name="description" content="Publica trabajos de edición, recibe ofertas de cliperos y ten tus clips en 48 horas." />
+<meta name="theme-color" content="#0B0907" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%23FF5A1F'/><path d='M12 9.5v13l10-6.5z' fill='%230B0907'/></svg>" />
+
+<!-- Satoshi, la misma familia que la landing. Sin esto el `font-family` de
+     index.css cae a la fuente del sistema y la mitad tipográfica de DESIGN.md
+     no se aplica.
+
+     NO AUTOALOJAR ESTA FUENTE. Parece la mejora obvia y no lo es: la EULA de
+     Fontshare (Indian Type Foundry, cláusula 02) lista subir la fuente a un
+     servidor público entre las formas de distribución prohibidas, y exige
+     consentimiento escrito para transmitirla por Internet en font serving.
+     La misma licencia describe la API de Fontshare como la vía por la que el
+     archivo viaja desde los servidores de ITF sin que nosotros lo alojemos,
+     que es exactamente lo que hacen estas dos líneas.
+     El paquete de descarga trae una carpeta WEB/ con instrucciones de
+     autoalojamiento, así que la redacción se contradice. Ante la duda, esta
+     ruta es la única sin zona gris. Decidido el 29 de julio de 2026. -->
+<!-- Los dos hosts, no solo el primero: el CSS sale de api.fontshare.com pero
+     el .woff2 sale de cdn.fontshare.com, y ese segundo salto no arranca hasta
+     que vuelve el primero. Sin este preconnect son dos TLS encadenados. -->
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f%5B%5D=satoshi@500,700,900&display=swap" />
+
+<style>
+  /* Pintado inmediato: evita el destello blanco antes de que cargue el CSS */
+  html, body, #root { background: #0B0907; color: #F7F5F3; min-height: 100%; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <noscript>
+    <div style="padding:24px;font-family:system-ui,sans-serif;color:#F7F5F3">
+      <h1 style="font-size:20px;margin:0 0 8px">Inclip necesita JavaScript</h1>
+      <p style="color:#A39D98;margin:0">
+        Esta es la aplicación con tu cuenta y tus trabajos. Activa JavaScript para entrar.
+      </p>
+    </div>
+  </noscript>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ══════════════════════════════════════════════════════════════
+   SISTEMA VISUAL. La fuente de verdad es DESIGN.md, en la raíz.
+
+   Reglas que no se rompen:
+   · Un solo acento: naranja. No hay segundo color de marca.
+   · Botón primario: naranja sólido con texto casi negro. Blanco
+     sobre este naranja da 3.1:1 y no pasa AA.
+   · Radio de 4px en todo. Pastilla solo para chips de estado.
+   · Sin sombras y sin halos de color. La jerarquía la construyen
+     las tres superficies y las hairlines.
+   · Verde y ámbar SOLO para diferencia de precio. Nunca para
+     éxito, error ni estado general.
+   · Toda animación tiene alternativa en prefers-reduced-motion.
+   · El contenido nunca depende de JS para ser visible.
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --ink:    #0B0907;
+  --ink2:   #131110;
+  --ink3:   #1C1917;
+  --paper:  #F7F5F3;
+  --muted:  #A39D98;
+  --flame:  #FF5A1F;
+  --flame2: #FF7A45;
+  --rojo:   #F87171;
+  --line:   rgba(247, 245, 243, 0.09);
+  --line2:  rgba(247, 245, 243, 0.18);
+  --salida: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html, body, #root {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+body {
+  font-family: 'Satoshi', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 { font-weight: 900; text-wrap: balance; letter-spacing: -0.03em; }
+p { text-wrap: pretty; }
+.tight { letter-spacing: -0.03em; }
+
+/* Precios, calificaciones, contadores y fechas. Sin esto las columnas
+   de precio bailan al actualizarse y el producto se siente barato. */
+.num { font-variant-numeric: tabular-nums; }
+
+::selection { background: var(--flame); color: var(--ink); }
+
+:focus-visible {
+  outline: 2px solid var(--flame);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Antes era un degradado cian a violeta. Ahora es una hairline y ya.
+   El nombre se conserva para no romper los componentes que la usan. */
+.grad-line { height: 1px; border: 0; background: var(--line); }
+
+/* ── Tarjetas ────────────────────────────────────────────────
+   Sin sombra y sin elevación en hover. La tarjeta cambia de
+   superficie, no flota. */
+.card {
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: border-color 0.25s var(--salida), background 0.25s var(--salida);
+}
+.card-hover:hover { border-color: var(--line2); background: var(--ink3); }
+
+/* ── Botones ─────────────────────────────────────────────────
+   Etiquetas de 1 a 3 palabras. Una etiqueta por intención en
+   toda la app. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  padding: 0.85rem 1.3rem;
+  border-radius: 4px;
+  transition: background 0.2s var(--salida), border-color 0.2s var(--salida),
+              color 0.2s var(--salida), transform 0.12s var(--salida), opacity 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.btn:active { transform: scale(0.985); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+/* Texto casi negro, no blanco. 6.4:1. */
+.btn-primary { background: var(--flame); color: var(--ink); }
+.btn-primary:hover:not(:disabled) { background: var(--flame2); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line2);
+  color: var(--paper);
+}
+.btn-ghost:hover:not(:disabled) { border-color: var(--flame); color: var(--flame); }
+
+/* Destructivo: contorno, nunca un bloque rojo suelto. La confirmación
+   va en modal. */
+.btn-danger {
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: var(--rojo);
+}
+.btn-danger:hover:not(:disabled) { border-color: var(--rojo); background: rgba(248, 113, 113, 0.08); }
+
+.btn-sm { padding: 0.55rem 0.95rem; font-size: 0.875rem; }
+.btn-lg { padding: 1rem 1.6rem; font-size: 1rem; }
+
+/* ── Chip de acento ──────────────────────────────────────── */
+.badge-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--flame);
+  background: rgba(255, 90, 31, 0.10);
+  border: 1px solid rgba(255, 90, 31, 0.34);
+}
+
+/* ── Campos ──────────────────────────────────────────────────
+   Etiqueta arriba del campo, ayuda debajo, error debajo de la
+   ayuda. Nunca placeholder como etiqueta. */
+.field {
+  width: 100%;
+  background: rgba(247, 245, 243, 0.03);
+  border: 1px solid var(--line2);
+  border-radius: 4px;
+  padding: 0.8rem 0.95rem;
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 0.9375rem;
+  transition: border-color 0.2s var(--salida), background 0.2s var(--salida);
+}
+.field:hover:not(:disabled) { border-color: rgba(247, 245, 243, 0.28); }
+.field:focus { outline: none; border-color: var(--flame); }
+.field:disabled { opacity: 0.55; cursor: not-allowed; }
+/* El placeholder también tiene que leerse: --muted da 6.9:1 aquí. */
+.field::placeholder { color: var(--muted); }
+.field-error { border-color: rgba(248, 113, 113, 0.55); }
+
+select.field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A39D98' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.1rem;
+  padding-right: 2.4rem;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────
+   Bloques con la forma del contenido final. Nunca un spinner a
+   pantalla completa. */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--ink2) 25%, var(--ink3) 50%, var(--ink2) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 4px;
+}
+
+/* ── Entrada suave ───────────────────────────────────────────
+   Anima de visible a visible: si la animación no corre, el
+   contenido igual se ve. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+.rise { animation: rise 0.4s var(--salida) both; }
+
+/* Único bucle permitido, y solo sobre estado semántico real. */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.8); }
+}
+.dot-live { animation: pulse-dot 2s ease-in-out infinite; }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: #2E2A27 transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: #2E2A27; border-radius: 999px; border: 3px solid var(--ink); }
+
+/* ── Accesibilidad ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .skeleton { animation: none !important; background: var(--ink2); }
+}
