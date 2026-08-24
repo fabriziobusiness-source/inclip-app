@@ -3,27 +3,6 @@ import { supabase, URL_APP } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
-/** Dónde guardamos el `?tipo=` de la landing mientras dura el rodeo por Google. */
-export const CLAVE_TIPO = 'inclip_tipo_registro';
-
-/** Lee ese tipo, validado. Devuelve null si no hay o si es basura. */
-export function tipoGuardado() {
-  try {
-    const v = sessionStorage.getItem(CLAVE_TIPO);
-    return v === 'cliente' || v === 'clipero' ? v : null;
-  } catch {
-    return null;
-  }
-}
-
-export function olvidarTipoGuardado() {
-  try {
-    sessionStorage.removeItem(CLAVE_TIPO);
-  } catch {
-    // Nada que hacer si el almacenamiento está bloqueado.
-  }
-}
-
 /* ══════════════════════════════════════════════════════════════
    Sesión + perfil + ficha de clipero, en un solo lugar.
 
@@ -117,30 +96,6 @@ export function AuthProvider({ children }) {
     return data;
   }, []);
 
-  const entrarConGoogle = useCallback(async (tipo) => {
-    // El tipo que venía en la URL de la landing no sobrevive solo: con Google
-    // el navegador se va a accounts.google.com y vuelve, y por ese camino no
-    // existen los metadatos que sí lleva el signUp con correo. sessionStorage
-    // aguanta el viaje de ida y vuelta en la misma pestaña y muere al cerrarla.
-    if (tipo === 'cliente' || tipo === 'clipero') {
-      try {
-        sessionStorage.setItem(CLAVE_TIPO, tipo);
-      } catch {
-        // Modo privado con almacenamiento bloqueado. No es fatal: el paso 2
-        // simplemente le preguntará el rol.
-      }
-    }
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${URL_APP}/entrar`,
-        queryParams: { prompt: 'select_account' },
-      },
-    });
-    if (error) throw error;
-  }, []);
-
   const salir = useCallback(async () => {
     await supabase.auth.signOut();
     setPerfil(null);
@@ -162,11 +117,10 @@ export function AuthProvider({ children }) {
       perfilCliperoListo: Boolean(perfil?.nombre && perfil?.foto_url),
       registrar,
       entrar,
-      entrarConGoogle,
       salir,
       refrescar,
     }),
-    [sesion, perfil, clipero, cargando, registrar, entrar, entrarConGoogle, salir, refrescar]
+    [sesion, perfil, clipero, cargando, registrar, entrar, salir, refrescar]
   );
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;

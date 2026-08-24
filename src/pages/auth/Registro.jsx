@@ -6,7 +6,7 @@ import { MARCA, REGLAS } from '../../config';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Aviso from '../../components/ui/Aviso';
-import MarcoAuth, { BotonGoogle, Separador } from './MarcoAuth';
+import MarcoAuth from './MarcoAuth';
 
 /* ══════════════════════════════════════════════════════════════
    PASO 1 del perfilado progresivo: correo y contraseña. Nada más.
@@ -34,7 +34,7 @@ const COPY = {
 export default function Registro() {
   const [params] = useSearchParams();
   const navegar = useNavigate();
-  const { registrar, entrarConGoogle } = useAuth();
+  const { registrar } = useAuth();
 
   const tipoUrl = params.get('tipo');
   const [tipo, setTipo] = useState(TIPOS_VALIDOS.includes(tipoUrl) ? tipoUrl : null);
@@ -65,15 +65,6 @@ export default function Registro() {
       setError(mensajeDeError(err));
     } finally {
       setEnviando(false);
-    }
-  }
-
-  async function google() {
-    setError('');
-    try {
-      await entrarConGoogle(tipo);
-    } catch (err) {
-      setError(mensajeDeError(err));
     }
   }
 
@@ -135,9 +126,6 @@ export default function Registro() {
 
   return (
     <MarcoAuth titulo={copy.titulo} bajada={copy.bajada}>
-      <BotonGoogle onClick={google}>Continuar con Google</BotonGoogle>
-      <Separador />
-
       <form onSubmit={enviar} className="space-y-4" noValidate>
         <Input
           etiqueta="Correo"

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth, tipoGuardado, olvidarTipoGuardado } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { supabase, mensajeDeError } from '../../lib/supabase';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -18,19 +18,12 @@ import MarcoAuth from './MarcoAuth';
 export default function Bienvenida() {
   const { perfil, refrescar } = useAuth();
 
-  /* El rol puede venir de dos sitios: del trigger de la base, que lo sacó de
-     los metadatos del signUp con correo, o de sessionStorage, si la persona
-     entró con Google y el dato tuvo que esperar el rodeo por accounts.google.
-     En los dos casos ya lo dijo con el clic en la landing y no se le vuelve
-     a preguntar. */
-  const preseleccion = perfil?.rol || tipoGuardado();
-
   const [nombre, setNombre] = useState(perfil?.nombre || '');
-  const [rol, setRol] = useState(preseleccion);
+  const [rol, setRol] = useState(perfil?.rol || null);
   const [error, setError] = useState('');
   const [enviando, setEnviando] = useState(false);
 
-  const rolPreseleccionado = Boolean(preseleccion);
+  const rolPreseleccionado = Boolean(perfil?.rol);
 
   async function enviar(e) {
     e.preventDefault();
@@ -52,7 +45,6 @@ export default function Bienvenida() {
         p_rol: rol,
       });
       if (err) throw err;
-      olvidarTipoGuardado(); // Ya está en la base; dejarlo aquí solo puede estorbar.
       await refrescar();
     } catch (err) {
       setError(mensajeDeError(err));

@@ -5,10 +5,10 @@ import { mensajeDeError, supabase, URL_APP } from '../../lib/supabase';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Aviso from '../../components/ui/Aviso';
-import MarcoAuth, { BotonGoogle, Separador } from './MarcoAuth';
+import MarcoAuth from './MarcoAuth';
 
 export default function Login() {
-  const { entrar, entrarConGoogle } = useAuth();
+  const { entrar } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -52,11 +52,6 @@ export default function Login() {
 
   return (
     <MarcoAuth titulo="Entra a tu cuenta" bajada="Tus trabajos, ofertas y entregas te esperan.">
-      <BotonGoogle onClick={() => entrarConGoogle().catch((e) => setError(mensajeDeError(e)))}>
-        Continuar con Google
-      </BotonGoogle>
-      <Separador />
-
       <form onSubmit={enviar} className="space-y-4" noValidate>
         <Input
           etiqueta="Correo"
