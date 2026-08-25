@@ -15,6 +15,7 @@ import Input, { Textarea, Select } from '../../components/ui/Input';
 import Avatar from '../../components/ui/Avatar';
 import Aviso from '../../components/ui/Aviso';
 import Modal from '../../components/ui/Modal';
+import EmptyState from '../../components/ui/EmptyState';
 import StarRating from '../../components/ui/StarRating';
 import { BadgeEstadoEditor } from '../../components/ui/Badge';
 import AvisoPerfil from '../../components/AvisoPerfil';
