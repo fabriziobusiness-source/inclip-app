@@ -35,6 +35,12 @@ create extension if not exists "pgcrypto";
 
 drop trigger if exists on_auth_user_created on auth.users;
 
+-- Las funciones que cambiaron de nombre no las alcanza el borrado de tablas:
+-- quedarían vivas apuntando a una tabla que ya no existe.
+drop function if exists public.completar_perfil_clipero(text, text, text, text, text, text, text, int) cascade;
+drop function if exists public.es_clipero_aprobado() cascade;
+drop function if exists public.admin_estado_clipero(uuid, public.estado_clipero) cascade;
+
 drop table if exists public.calificaciones cascade;
 drop table if exists public.revisiones     cascade;
 drop table if exists public.entregas       cascade;
@@ -623,7 +629,9 @@ begin
     -- Certificar IA sin verificar identidad no significa nada: el distintivo
     -- diría que domina IA alguien de quien no confirmamos que edita él mismo.
     certificado_ia      = (p_verificado and p_certificado_ia),
-    estado_verificacion = case when p_verificado then 'aprobada' else 'rechazada' end,
+    -- El cast es obligatorio: con las dos ramas del CASE en literales sueltos,
+    -- Postgres resuelve el tipo como text y rechaza asignarlo a un enum.
+    estado_verificacion = (case when p_verificado then 'aprobada' else 'rechazada' end)::public.estado_verificacion,
     resuelta_en         = now(),
     nota_verificacion   = p_nota
   where perfil_id = p_editor;
