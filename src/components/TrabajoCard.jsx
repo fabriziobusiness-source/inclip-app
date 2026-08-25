@@ -1,5 +1,6 @@
 import Card from './ui/Card';
 import { BadgeInfo, BadgeEstadoTrabajo } from './ui/Badge';
+import { ChipModalidad } from './Distintivos';
 import PriceDisplay from './ui/PriceDisplay';
 import { textoPlazo, diasRestantes, fecha } from '../lib/formato';
 import { TIPOS_TRABAJO } from '../config';
@@ -9,7 +10,7 @@ function etiquetaTipo(tipo) {
 }
 
 /**
- * Tarjeta de trabajo. La usan el listado del clipero y el del cliente.
+ * Tarjeta de trabajo. La usan el listado del editor y el del cliente.
  * El precio total va grande y primero; todo lo demás es contexto.
  */
 export default function TrabajoCard({ trabajo, to, mostrarEstado = false, pie }) {
@@ -21,6 +22,7 @@ export default function TrabajoCard({ trabajo, to, mostrarEstado = false, pie })
     <Card hover to={to} className="flex h-full flex-col p-5">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {mostrarEstado && <BadgeEstadoTrabajo estado={trabajo.estado} />}
+        {trabajo.modalidad && <ChipModalidad valor={trabajo.modalidad} conApodo />}
         <BadgeInfo>{etiquetaTipo(trabajo.tipo)}</BadgeInfo>
         {trabajo.requiere_publicacion && (
           <BadgeInfo>Incluye publicación</BadgeInfo>

@@ -6,7 +6,7 @@
 
    Verde y ámbar NO aparecen aquí. Están reservados a la diferencia de precio
    contra el presupuesto publicado. En la lista de postulaciones conviven los
-   dos significados, y si el verde dijera además "aceptada", el clipero no
+   dos significados, y si el verde dijera además "aceptada", el editor no
    sabría cuál de las dos cosas está leyendo. */
 
 /* Tratamientos, para que ningún estado invente el suyo. */
@@ -21,50 +21,50 @@ export const ESTADOS_TRABAJO = {
   abierto: {
     etiqueta: 'Abierto',
     clase: ACCION,
-    descripcionCliente: 'Recibiendo ofertas de cliperos.',
-    descripcionClipero: 'Puedes ofertar en este trabajo.',
+    descripcionCliente: 'Recibiendo ofertas de editores.',
+    descripcionEditor: 'Puedes ofertar en este trabajo.',
   },
   asignado: {
     etiqueta: 'Asignado',
     clase: ACTIVO,
-    descripcionCliente: 'Ya elegiste clipero. Espera la entrega.',
-    descripcionClipero: 'Es tuyo. Ponte a editar.',
+    descripcionCliente: 'Ya elegiste editor. Espera la entrega.',
+    descripcionEditor: 'Es tuyo. Ponte a editar.',
   },
   en_progreso: {
     etiqueta: 'En progreso',
     clase: EN_CURSO,
-    descripcionCliente: 'El clipero está trabajando.',
-    descripcionClipero: 'En curso.',
+    descripcionCliente: 'El editor está trabajando.',
+    descripcionEditor: 'En curso.',
   },
   entregado: {
     etiqueta: 'Entregado',
     clase: ESPERA,
     descripcionCliente: 'Revisa la entrega y apruébala o pide ajustes.',
-    descripcionClipero: 'Entregado. Esperando la revisión del cliente.',
+    descripcionEditor: 'Entregado. Esperando la revisión del cliente.',
   },
   en_ajustes: {
     etiqueta: 'En ajustes',
     clase: EN_CURSO,
-    descripcionCliente: 'Pediste ajustes. El clipero está corrigiendo.',
-    descripcionClipero: 'El cliente pidió ajustes. Vuelve a entregar.',
+    descripcionCliente: 'Pediste ajustes. El editor está corrigiendo.',
+    descripcionEditor: 'El cliente pidió ajustes. Vuelve a entregar.',
   },
   completado: {
     etiqueta: 'Completado',
     clase: CERRADO,
     descripcionCliente: 'Trabajo cerrado.',
-    descripcionClipero: 'Cerrado. El monto está en tu saldo.',
+    descripcionEditor: 'Cerrado. El monto está en tu saldo.',
   },
   cancelado: {
     etiqueta: 'Cancelado',
     clase: CERRADO,
     descripcionCliente: 'Cerraste este trabajo sin elegir a nadie.',
-    descripcionClipero: 'El cliente cerró este trabajo.',
+    descripcionEditor: 'El cliente cerró este trabajo.',
   },
   en_disputa: {
     etiqueta: 'En disputa',
     clase: PROBLEMA,
     descripcionCliente: 'Lo estamos revisando. Te escribimos.',
-    descripcionClipero: 'Lo estamos revisando. Te escribimos.',
+    descripcionEditor: 'Lo estamos revisando. Te escribimos.',
   },
 };
 
@@ -76,7 +76,7 @@ export const ESTADOS_POSTULACION = {
   retirada:  { etiqueta: 'Retirada',   clase: CERRADO },
 };
 
-export const ESTADOS_CLIPERO = {
+export const ESTADOS_EDITOR = {
   pendiente:   { etiqueta: 'Perfil incompleto', clase: ESPERA },
   en_revision: { etiqueta: 'En revisión',       clase: EN_CURSO },
   aprobado:    { etiqueta: 'Aprobado',          clase: ACTIVO },
@@ -90,7 +90,7 @@ export const ESTADOS_RETIRO = {
   rechazado:  { etiqueta: 'Rechazado',  clase: PROBLEMA },
 };
 
-/** Estados en los que el trabajo ocupa un cupo de la capacidad del clipero. */
+/** Estados en los que el trabajo ocupa un cupo de la capacidad del editor. */
 export const ESTADOS_ACTIVOS = ['asignado', 'en_progreso', 'entregado', 'en_ajustes'];
 
 export function infoEstadoTrabajo(estado) {

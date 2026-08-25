@@ -42,12 +42,14 @@ export default function DetalleTrabajo() {
         .from('trabajos')
         .select(
           `*,
-           clipero:cliperos!trabajos_clipero_id_fkey(
+           editor:editores!trabajos_editor_id_fkey(
              perfil_id, calificacion_promedio, total_calificaciones, trabajos_completados,
+             verificado, certificado_ia, modalidades,
              perfiles(nombre, foto_url, ciudad)
            ),
            postulaciones(
-             *, cliperos(perfil_id, calificacion_promedio, total_calificaciones, trabajos_completados,
+             *, editores(perfil_id, calificacion_promedio, total_calificaciones, trabajos_completados,
+             verificado, certificado_ia, modalidades,
                          perfiles(nombre, foto_url, ciudad))
            ),
            entregas(*, revisiones(*)),
@@ -79,7 +81,7 @@ export default function DetalleTrabajo() {
     try {
       const { error: err } = await supabase.rpc('aprobar_entrega', { p_entrega: entregaId });
       if (err) throw err;
-      toast.exito('Trabajo aprobado. El monto pasó al saldo del clipero.');
+      toast.exito('Trabajo aprobado. El monto pasó al saldo del editor.');
       await recargar();
       setAccion('calificar');
     } catch (err) {
@@ -102,7 +104,7 @@ export default function DetalleTrabajo() {
         p_comentario: comentario.trim(),
       });
       if (err) throw err;
-      toast.exito('Le pedimos los ajustes al clipero.');
+      toast.exito('Le pedimos los ajustes al editor.');
       setAccion(null);
       setComentario('');
       await recargar();
@@ -196,7 +198,7 @@ export default function DetalleTrabajo() {
   const entregas = [...(t.entregas || [])].sort((a, b) => b.version - a.version);
   const ultimaEntrega = entregas[0];
   const yaCalifique = (t.calificaciones || []).some((c) => c.de_perfil_id === usuario.id);
-  const clipero = t.clipero;
+  const editor = t.editor;
   const info = infoEstadoTrabajo(t.estado);
 
   return (
@@ -307,7 +309,7 @@ export default function DetalleTrabajo() {
                 <EmptyState
                   variante="plano"
                   titulo="Todavía nadie ofertó"
-                  mensaje="Los cliperos ven tu trabajo en su listado apenas lo publicas. Si en un día no llega nada, casi siempre es el precio o que falta el link del material."
+                  mensaje="Los editores ven tu trabajo en su listado apenas lo publicas. Si en un día no llega nada, casi siempre es el precio o que falta el link del material."
                   accion={t.url_material_fuente ? 'Ajustar el precio' : 'Agregar el material'}
                   accionOnClick={abrirEdicion}
                 />
@@ -329,7 +331,7 @@ export default function DetalleTrabajo() {
               <EmptyState
                 variante="plano"
                 titulo="Todavía no hay entregas"
-                mensaje={`${clipero?.perfiles?.nombre || 'Tu clipero'} está editando. Cuando suba los clips los vas a ver aquí y podrás aprobarlos o pedir ajustes. La fecha límite es el ${fecha(t.fecha_limite)}.`}
+                mensaje={`${editor?.perfiles?.nombre || 'Tu editor'} está editando. Cuando suba los clips los vas a ver aquí y podrás aprobarlos o pedir ajustes. La fecha límite es el ${fecha(t.fecha_limite)}.`}
                 accion={t.url_material_fuente ? 'Revisar el material que enviaste' : undefined}
                 accionHref={t.url_material_fuente || undefined}
               />
@@ -456,22 +458,22 @@ export default function DetalleTrabajo() {
             </dl>
           </Card>
 
-          {/* ── Clipero asignado ── */}
-          {clipero && (
+          {/* ── Editor asignado ── */}
+          {editor && (
             <Card className="p-5">
-              <h2 className="mb-3 text-[15px] font-semibold tight">Tu clipero</h2>
-              <Link to={`/clipero/perfil/${clipero.perfil_id}`} className="flex items-center gap-3">
-                <Avatar url={clipero.perfiles?.foto_url} nombre={clipero.perfiles?.nombre} tamano="md" />
+              <h2 className="mb-3 text-[15px] font-semibold tight">Tu editor</h2>
+              <Link to={`/editor/perfil/${editor.perfil_id}`} className="flex items-center gap-3">
+                <Avatar url={editor.perfiles?.foto_url} nombre={editor.perfiles?.nombre} tamano="md" />
                 <div className="min-w-0">
-                  <p className="truncate text-[14px] font-semibold">{clipero.perfiles?.nombre}</p>
+                  <p className="truncate text-[14px] font-semibold">{editor.perfiles?.nombre}</p>
                   <StarRating
-                    valor={clipero.calificacion_promedio}
-                    total={clipero.total_calificaciones}
+                    valor={editor.calificacion_promedio}
+                    total={editor.total_calificaciones}
                     className="mt-0.5"
                   />
                 </div>
               </Link>
-              <Button variante="ghost" tamano="sm" to={`/clipero/perfil/${clipero.perfil_id}`} className="mt-4 w-full">
+              <Button variante="ghost" tamano="sm" to={`/editor/perfil/${editor.perfil_id}`} className="mt-4 w-full">
                 Ver su perfil
               </Button>
             </Card>
@@ -483,7 +485,7 @@ export default function DetalleTrabajo() {
               <h2 className="text-[15px] font-semibold tight">Calificación</h2>
               {yaCalifique ? (
                 <p className="mt-2 text-[13px] leading-relaxed text-mut">
-                  Ya calificaste. Se destapa cuando el clipero también lo haga o pasen{' '}
+                  Ya calificaste. Se destapa cuando el editor también lo haga o pasen{' '}
                   {REGLAS.DIAS_HASTA_DESTAPAR_CALIFICACION} días.
                 </p>
               ) : (
@@ -492,7 +494,7 @@ export default function DetalleTrabajo() {
                     Cuenta cómo te fue. Es lo que ayuda al próximo emprendedor a elegir.
                   </p>
                   <Button tamano="sm" className="mt-4 w-full" onClick={() => setAccion('calificar')}>
-                    Calificar al clipero
+                    Calificar al editor
                   </Button>
                 </>
               )}
@@ -617,7 +619,7 @@ export default function DetalleTrabajo() {
         abierto={accion === 'calificar'}
         onCerrar={() => setAccion(null)}
         trabajoId={t.id}
-        nombreDestino={clipero?.perfiles?.nombre}
+        nombreDestino={editor?.perfiles?.nombre}
         onListo={recargar}
       />
     </>

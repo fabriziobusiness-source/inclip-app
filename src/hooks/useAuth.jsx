@@ -4,7 +4,7 @@ import { supabase, URL_APP } from '../lib/supabase';
 const AuthContext = createContext(null);
 
 /* ══════════════════════════════════════════════════════════════
-   Sesión + perfil + ficha de clipero, en un solo lugar.
+   Sesión + perfil + ficha de editor, en un solo lugar.
 
    `perfil.rol` y `perfil.nombre` pueden venir nulos: el registro
    solo pide correo y contraseña. Ese hueco es intencional, es el
@@ -15,14 +15,14 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [sesion, setSesion] = useState(null);
   const [perfil, setPerfil] = useState(null);
-  const [clipero, setClipero] = useState(null);
+  const [editor, setEditor] = useState(null);
   const [cargando, setCargando] = useState(true);
   const montado = useRef(true);
 
   const cargarPerfil = useCallback(async (userId) => {
     if (!userId) {
       setPerfil(null);
-      setClipero(null);
+      setEditor(null);
       return;
     }
 
@@ -30,12 +30,12 @@ export function AuthProvider({ children }) {
     if (!montado.current) return;
     setPerfil(p || null);
 
-    if (p?.rol === 'clipero') {
-      const { data: c } = await supabase.from('cliperos').select('*').eq('perfil_id', userId).maybeSingle();
+    if (p?.rol === 'editor') {
+      const { data: c } = await supabase.from('editores').select('*').eq('perfil_id', userId).maybeSingle();
       if (!montado.current) return;
-      setClipero(c || null);
+      setEditor(c || null);
     } else {
-      setClipero(null);
+      setEditor(null);
     }
   }, []);
 
@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
       setSesion(s);
       if (evento === 'SIGNED_OUT') {
         setPerfil(null);
-        setClipero(null);
+        setEditor(null);
         return;
       }
       // El perfil lo crea un trigger al registrarse. Si consultamos en el mismo
@@ -99,7 +99,7 @@ export function AuthProvider({ children }) {
   const salir = useCallback(async () => {
     await supabase.auth.signOut();
     setPerfil(null);
-    setClipero(null);
+    setEditor(null);
   }, []);
 
   const valor = useMemo(
@@ -107,20 +107,20 @@ export function AuthProvider({ children }) {
       sesion,
       usuario: sesion?.user || null,
       perfil,
-      clipero,
+      editor,
       cargando,
       rol: perfil?.rol || null,
       esAdmin: perfil?.rol === 'admin',
       // Paso 2 completo: ya tiene nombre y rol.
       perfilBasicoListo: Boolean(perfil?.rol && perfil?.nombre),
       // Paso 3a completo: lo que se exige antes de la primera oferta.
-      perfilCliperoListo: Boolean(perfil?.nombre && perfil?.foto_url),
+      perfilEditorListo: Boolean(perfil?.nombre && perfil?.foto_url),
       registrar,
       entrar,
       salir,
       refrescar,
     }),
-    [sesion, perfil, clipero, cargando, registrar, entrar, salir, refrescar]
+    [sesion, perfil, editor, cargando, registrar, entrar, salir, refrescar]
   );
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;

@@ -80,7 +80,7 @@ export default function Trabajos() {
           mensaje={
             datos?.length
               ? 'Prueba con otro filtro para ver el resto de tus trabajos.'
-              : 'Publica cuánto estás dispuesto a pagar por tus clips. Los cliperos aceptan tu precio o te contraofertan, y tú eliges por precio y calificación.'
+              : 'Publica cuánto estás dispuesto a pagar por tus clips. Los editores aceptan tu precio o te contraofertan, y tú eliges por precio y calificación.'
           }
           accion={datos?.length ? undefined : 'Publicar mi primer trabajo'}
           accionTo="/cliente/publicar"

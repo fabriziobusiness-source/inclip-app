@@ -36,7 +36,7 @@ export default function Entregar() {
         .from('trabajos')
         .select('*, perfiles!trabajos_cliente_id_fkey(nombre), entregas(id, version, revisiones(comentario))')
         .eq('id', id)
-        .eq('clipero_id', usuario.id)
+        .eq('editor_id', usuario.id)
         .maybeSingle(),
     [id, usuario.id]
   );
@@ -73,7 +73,7 @@ export default function Entregar() {
       });
       if (err) throw err;
       toast.exito('Entrega enviada. El cliente la revisa y aprueba.');
-      navegar('/clipero/mis-trabajos', { replace: true });
+      navegar('/editor/mis-trabajos', { replace: true });
     } catch (err) {
       setError(mensajeDeError(err));
       setEnviando(false);
@@ -95,7 +95,7 @@ export default function Entregar() {
         titulo="Este trabajo no es tuyo"
         mensaje="O ya no está asignado a tu cuenta."
         accion="Ver mis trabajos"
-        accionTo="/clipero/mis-trabajos"
+        accionTo="/editor/mis-trabajos"
       />
     );
   }
@@ -103,7 +103,7 @@ export default function Entregar() {
   return (
     <>
       <Link
-        to="/clipero/mis-trabajos"
+        to="/editor/mis-trabajos"
         className="mb-4 inline-flex items-center gap-1.5 text-[13px] text-mut hover:text-paper"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
@@ -206,7 +206,7 @@ export default function Entregar() {
           <Card className="p-5">
             <p className="text-[11.5px] uppercase tracking-wide text-mut">Cobrarás</p>
             <p className="num mt-1 text-[30px] font-extrabold leading-none tight text-cy">
-              {dinero(t.monto_clipero || t.precio_acordado)}
+              {dinero(t.monto_editor || t.precio_acordado)}
             </p>
             {t.comision_monto > 0 && (
               <p className="num mt-1.5 text-[12.5px] text-mut">

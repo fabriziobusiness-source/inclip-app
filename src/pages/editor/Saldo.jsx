@@ -49,7 +49,7 @@ export default function Saldo() {
       supabase
         .from('retiros')
         .select('*')
-        .eq('clipero_id', usuario.id)
+        .eq('editor_id', usuario.id)
         .order('creado_en', { ascending: false }),
     ]);
 
@@ -203,7 +203,7 @@ export default function Saldo() {
                 titulo="Sin movimientos todavía"
                 mensaje="Aquí aparece cada pago liberado y cada retiro, con su fecha. Es tu libro de cuentas."
                 accion="Ver trabajos disponibles"
-                accionTo="/clipero/trabajos"
+                accionTo="/editor/trabajos"
               />
             )}
           </section>

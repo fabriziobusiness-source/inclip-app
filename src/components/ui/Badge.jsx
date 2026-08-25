@@ -1,4 +1,4 @@
-import { infoEstadoTrabajo, ESTADOS_POSTULACION, ESTADOS_CLIPERO, ESTADOS_RETIRO } from '../../lib/estados';
+import { infoEstadoTrabajo, ESTADOS_POSTULACION, ESTADOS_EDITOR, ESTADOS_RETIRO } from '../../lib/estados';
 
 /* Pastilla: es la única excepción al radio de 4px de todo el sistema.
 
@@ -41,8 +41,8 @@ export function BadgeEstadoPostulacion({ estado }) {
   return <ChipEstado info={ESTADOS_POSTULACION[estado] || { etiqueta: estado, clase: FALLBACK }} />;
 }
 
-export function BadgeEstadoClipero({ estado }) {
-  return <ChipEstado info={ESTADOS_CLIPERO[estado] || { etiqueta: estado, clase: FALLBACK }} />;
+export function BadgeEstadoEditor({ estado }) {
+  return <ChipEstado info={ESTADOS_EDITOR[estado] || { etiqueta: estado, clase: FALLBACK }} />;
 }
 
 export function BadgeEstadoRetiro({ estado }) {

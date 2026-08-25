@@ -3,7 +3,7 @@ import { supabase } from './supabase';
 
 /* Comprimir en el navegador antes de subir.
    Una foto de celular pesa 4 MB. Subirla tal cual multiplica por ocho la
-   factura de almacenamiento y hace esperar al clipero con datos móviles,
+   factura de almacenamiento y hace esperar al editor con datos móviles,
    que es exactamente el usuario que no puede esperar. */
 export async function comprimirImagen(archivo) {
   if (!IMAGENES.TIPOS.includes(archivo.type)) {

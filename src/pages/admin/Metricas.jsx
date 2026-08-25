@@ -1,7 +1,7 @@
 import { supabase } from '../../lib/supabase';
 import { useDatos } from '../../hooks/useDatos';
 import { dinero, numero } from '../../lib/formato';
-import { ESTADOS_TRABAJO, ESTADOS_CLIPERO } from '../../lib/estados';
+import { ESTADOS_TRABAJO, ESTADOS_EDITOR } from '../../lib/estados';
 import { COMISION } from '../../config';
 
 import { Encabezado } from '../../components/Layout';
@@ -30,7 +30,7 @@ export default function Metricas() {
 
   const m = datos || {};
   const porEstado = m.trabajos_por_estado || {};
-  const cliperos = m.cliperos_por_estado || {};
+  const editores = m.editores_por_estado || {};
   const totalTrabajos = Object.values(porEstado).reduce((a, b) => a + Number(b), 0);
 
   return (
@@ -67,11 +67,11 @@ export default function Metricas() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <Cifra etiqueta="Cliperos aprobados" valor={numero(cliperos.aprobado || 0)} />
+            <Cifra etiqueta="Editores aprobados" valor={numero(editores.aprobado || 0)} />
             <Cifra
               etiqueta="Esperando revisión"
-              valor={numero(cliperos.en_revision || 0)}
-              detalle={cliperos.en_revision ? 'Tienes cliperos por aprobar' : 'Nada pendiente'}
+              valor={numero(editores.en_revision || 0)}
+              detalle={editores.en_revision ? 'Tienes editores por aprobar' : 'Nada pendiente'}
             />
             <Cifra etiqueta="Emprendedores" valor={numero(m.clientes || 0)} />
             <Cifra
@@ -117,12 +117,12 @@ export default function Metricas() {
             </Card>
 
             <Card className="p-5">
-              <h2 className="mb-4 text-[15px] font-semibold tight">Cliperos por estado</h2>
+              <h2 className="mb-4 text-[15px] font-semibold tight">Editores por estado</h2>
               <dl className="space-y-2.5 text-[13px]">
-                {Object.entries(ESTADOS_CLIPERO).map(([clave, info]) => (
+                {Object.entries(ESTADOS_EDITOR).map(([clave, info]) => (
                   <div key={clave} className="flex justify-between gap-3">
                     <dt className="text-mut">{info.etiqueta}</dt>
-                    <dd className="num">{numero(cliperos[clave] || 0)}</dd>
+                    <dd className="num">{numero(editores[clave] || 0)}</dd>
                   </div>
                 ))}
               </dl>
@@ -134,7 +134,7 @@ export default function Metricas() {
                 </p>
                 <p className="mt-2 text-[12.5px] leading-relaxed text-mut">
                   {COMISION.PORCENTAJE}% por trabajo completado
-                  {COMISION.PRIMER_TRABAJO_GRATIS && ', sin cobrar el primero de cada clipero'}.
+                  {COMISION.PRIMER_TRABAJO_GRATIS && ', sin cobrar el primero de cada editor'}.
                 </p>
               </div>
             </Card>

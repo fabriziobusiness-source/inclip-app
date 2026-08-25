@@ -87,7 +87,7 @@ export default function Bienvenida() {
             <div className="grid gap-2">
               {[
                 { valor: 'cliente', titulo: 'Necesito clips', detalle: 'Publico trabajos y recibo ofertas' },
-                { valor: 'clipero', titulo: 'Edito video', detalle: 'Oferto en trabajos y entrego' },
+                { valor: 'editor', titulo: 'Edito video', detalle: 'Oferto en trabajos y entrego' },
               ].map((o) => (
                 <label
                   key={o.valor}
@@ -117,7 +117,7 @@ export default function Bienvenida() {
           <p className="text-[12.5px] text-mut">
             Entras como{' '}
             <strong className="font-medium text-paper">
-              {perfil?.rol === 'clipero' ? 'clipero' : 'emprendedor'}
+              {perfil?.rol === 'editor' ? 'editor' : 'emprendedor'}
             </strong>
             . Si no es lo que querías, escríbenos antes de publicar u ofertar.
           </p>

@@ -29,7 +29,7 @@ export default function Trabajos() {
         .select(
           `*,
            cliente:perfiles!trabajos_cliente_id_fkey(nombre),
-           clipero:cliperos!trabajos_clipero_id_fkey(perfiles(nombre)),
+           editor:editores!trabajos_editor_id_fkey(perfiles(nombre)),
            postulaciones(id)`
         )
         .order('creado_en', { ascending: false }),
@@ -131,7 +131,7 @@ export default function Trabajos() {
 
                   <p className="mt-1 text-[12.5px] text-mut">
                     {t.cliente?.nombre || 'Cliente'}
-                    {t.clipero?.perfiles?.nombre ? ` → ${t.clipero.perfiles.nombre}` : ''} · publicado{' '}
+                    {t.editor?.perfiles?.nombre ? ` → ${t.editor.perfiles.nombre}` : ''} · publicado{' '}
                     {fecha(t.creado_en)} · límite {fecha(t.fecha_limite)}
                   </p>
 

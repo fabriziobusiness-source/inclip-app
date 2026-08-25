@@ -4,7 +4,7 @@ import { MARCA } from '../config';
 import Avatar from './ui/Avatar';
 
 /* Barra lateral de 220px en escritorio, navegación inferior en móvil.
-   Mobile-first no es un adorno: los cliperos entran desde el celular.
+   Mobile-first no es un adorno: los editores entran desde el celular.
 
    La navegación inferior admite 4 destinos como máximo. Con cinco, cada
    uno queda en 75px en una pantalla de 375px y el texto empieza a
@@ -36,17 +36,17 @@ const MENUS = {
     { to: '/cliente/publicar', etiqueta: 'Publicar', icono: IC.publicar },
     { to: '/cliente/perfil', etiqueta: 'Mi perfil', icono: IC.perfil },
   ],
-  clipero: [
-    { to: '/clipero/trabajos', etiqueta: 'Trabajos', icono: IC.trabajos },
-    { to: '/clipero/postulaciones', etiqueta: 'Mis ofertas', icono: IC.ofertas },
-    { to: '/clipero/mis-trabajos', etiqueta: 'En curso', icono: IC.entregas },
-    { to: '/clipero/saldo', etiqueta: 'Saldo', icono: IC.saldo },
+  editor: [
+    { to: '/editor/trabajos', etiqueta: 'Trabajos', icono: IC.trabajos },
+    { to: '/editor/postulaciones', etiqueta: 'Mis ofertas', icono: IC.ofertas },
+    { to: '/editor/mis-trabajos', etiqueta: 'En curso', icono: IC.entregas },
+    { to: '/editor/saldo', etiqueta: 'Saldo', icono: IC.saldo },
     // Se llega tocando el avatar de la barra superior.
-    { to: '/clipero/perfil', etiqueta: 'Mi perfil', icono: IC.perfil, movil: false },
+    { to: '/editor/perfil', etiqueta: 'Mi perfil', icono: IC.perfil, movil: false },
   ],
   admin: [
     { to: '/admin/metricas', etiqueta: 'Métricas', icono: IC.metricas },
-    { to: '/admin/cliperos', etiqueta: 'Cliperos', icono: IC.perfil },
+    { to: '/admin/editores', etiqueta: 'Editores', icono: IC.perfil },
     { to: '/admin/trabajos', etiqueta: 'Trabajos', icono: IC.trabajos },
     { to: '/admin/retiros', etiqueta: 'Retiros', icono: IC.saldo },
   ],
@@ -58,7 +58,7 @@ export default function Layout() {
   const menuMovil = menu.filter((item) => item.movil !== false).slice(0, 4);
   const inicio = menu[0]?.to || '/';
   const rutaPerfil =
-    rol === 'clipero' ? '/clipero/perfil' : rol === 'cliente' ? '/cliente/perfil' : '/admin/metricas';
+    rol === 'editor' ? '/editor/perfil' : rol === 'cliente' ? '/cliente/perfil' : '/admin/metricas';
 
   return (
     <div className="min-h-dvh">

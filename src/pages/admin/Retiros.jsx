@@ -15,7 +15,7 @@ import EmptyState from '../../components/ui/EmptyState';
 import { SkeletonFilas } from '../../components/ui/Skeleton';
 
 /* Marcar un retiro como pagado escribe el movimiento negativo en el libro del
-   clipero. Por eso solo se marca DESPUÉS de que la transferencia salió: al
+   editor. Por eso solo se marca DESPUÉS de que la transferencia salió: al
    revés, el saldo mentiría. */
 
 export default function Retiros() {
@@ -29,7 +29,7 @@ export default function Retiros() {
     () =>
       supabase
         .from('retiros')
-        .select('*, cliperos(perfiles(nombre, foto_url))')
+        .select('*, editores(perfiles(nombre, foto_url))')
         .order('creado_en', { ascending: false }),
     []
   );
@@ -114,7 +114,7 @@ export default function Retiros() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                    <p className="text-[14.5px] font-semibold">{r.cliperos?.perfiles?.nombre || 'Clipero'}</p>
+                    <p className="text-[14.5px] font-semibold">{r.editores?.perfiles?.nombre || 'Editor'}</p>
                     <BadgeEstadoRetiro estado={r.estado} />
                   </div>
 
@@ -168,13 +168,13 @@ export default function Retiros() {
         titulo={accion?.estado === 'pagado' ? '¿Ya hiciste la transferencia?' : 'Rechazar retiro'}
         descripcion={
           accion?.estado === 'pagado'
-            ? `Se descuentan ${dinero(accion?.retiro?.monto || 0)} del saldo del clipero. Solo marca esto si el dinero ya salió.`
+            ? `Se descuentan ${dinero(accion?.retiro?.monto || 0)} del saldo del editor. Solo marca esto si el dinero ya salió.`
             : 'El monto vuelve a quedar disponible en su saldo.'
         }
       >
         <div className="space-y-4">
           <Textarea
-            etiqueta="Nota para el clipero"
+            etiqueta="Nota para el editor"
             rows={3}
             value={nota}
             onChange={(e) => setNota(e.target.value)}

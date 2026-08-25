@@ -8,12 +8,13 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Avatar from '../../components/ui/Avatar';
 import StarRating from '../../components/ui/StarRating';
-import { BadgeAcento, BadgeEstadoClipero } from '../../components/ui/Badge';
+import { BadgeAcento, BadgeEstadoEditor } from '../../components/ui/Badge';
+import { SelloVerificado, SelloIA, ChipModalidad } from '../../components/Distintivos';
 import Aviso from '../../components/ui/Aviso';
 import EmptyState from '../../components/ui/EmptyState';
 import { SkeletonFilas, SkeletonEncabezado } from '../../components/ui/Skeleton';
 
-/* Perfil público del clipero. Se abre desde cualquier oferta.
+/* Perfil público del editor. Se abre desde cualquier oferta.
    Es la pantalla con la que el cliente decide, así que lo primero
    que se ve son las tres cosas que pesan: calificación, trabajos
    completados y puntualidad. */
@@ -25,7 +26,7 @@ export default function PerfilPublico() {
   const { datos, cargando, error } = useDatos(async () => {
     const [ficha, resenas] = await Promise.all([
       supabase
-        .from('cliperos')
+        .from('editores')
         .select('*, perfiles(nombre, foto_url, descripcion, ciudad, pais, handle_redes, creado_en), portafolio(*)')
         .eq('perfil_id', id)
         .maybeSingle(),
@@ -94,7 +95,16 @@ export default function PerfilPublico() {
               <Avatar url={p?.foto_url} nombre={p?.nombre} tamano="xl" />
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-[24px] font-bold leading-tight tight">{p?.nombre || 'Clipero'}</h1>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-[24px] font-bold leading-tight tight">{p?.nombre || 'Editor'}</h1>
+                  {c.verificado && <SelloVerificado tamano={20} />}
+                </div>
+
+                {c.verificado && (
+                  <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted">
+                    Confirmamos en videollamada que edita él mismo y no terceriza el trabajo.
+                  </p>
+                )}
 
                 <p className="mt-1 text-[13.5px] text-mut">
                   {[p?.ciudad, p?.pais].filter(Boolean).join(', ') || 'Ubicación no indicada'}
@@ -105,12 +115,14 @@ export default function PerfilPublico() {
                   <StarRating valor={c.calificacion_promedio} total={c.total_calificaciones} tamano={17} />
                 </div>
 
-                {(especialidad || c.estado === 'aprobado') && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {especialidad && <BadgeAcento>{especialidad}</BadgeAcento>}
-                    {c.estado === 'aprobado' && <BadgeEstadoClipero estado="aprobado" />}
-                  </div>
-                )}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {(c.modalidades || []).map((m) => (
+                    <ChipModalidad key={m} valor={m} conApodo />
+                  ))}
+                  {especialidad && <BadgeAcento>{especialidad}</BadgeAcento>}
+                  {c.certificado_ia && <SelloIA />}
+                  {c.estado === 'aprobado' && <BadgeEstadoEditor estado="aprobado" />}
+                </div>
               </div>
             </div>
 

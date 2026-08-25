@@ -36,8 +36,8 @@ export const PAIS = {
 };
 
 /* ── Comisión ──────────────────────────────────────────────────
-   Se descuenta del pago al clipero al aprobarse el trabajo.
-   El primer trabajo completado de cada clipero va sin comisión.  */
+   Se descuenta del pago al editor al aprobarse el trabajo.
+   El primer trabajo completado de cada editor va sin comisión.  */
 export const COMISION = {
   PORCENTAJE: 15,
   PRIMER_TRABAJO_GRATIS: true,
@@ -69,6 +69,51 @@ export const TIPOS_TRABAJO = [
   { valor: 'anuncios', etiqueta: 'Anuncios' },
   { valor: 'reels', etiqueta: 'Reels / Shorts' },
 ];
+
+/* ── Modalidades ───────────────────────────────────────────────
+   Cómo se trabaja, no quién eres. Un editor puede ofrecer las dos
+   y el trabajo declara cuál busca.
+
+   Ninguna de las dos es la versión barata de la otra, y el copy no
+   debe sugerirlo: son encargos distintos. "Sacrificar calidad" no
+   aparece en ninguna pantalla, porque nadie quiere contratar la
+   opción peor ni figurar en ella.                                */
+export const MODALIDADES = [
+  {
+    valor: 'volumen',
+    etiqueta: 'Volumen',
+    // La palabra de marca vive aquí, como modalidad, no como persona.
+    apodo: 'Clipero',
+    resumen: 'Muchos clips, entrega rápida',
+    paraCliente: 'Necesito muchos clips de un mismo material, rápido y con un precio por clip bajo.',
+    paraEditor: 'Cortas mucho volumen en poco tiempo. El precio por clip es menor y lo compensas con cantidad.',
+  },
+  {
+    valor: 'pieza',
+    etiqueta: 'Pieza',
+    apodo: 'Edición',
+    resumen: 'Menos piezas, más trabajo en cada una',
+    paraCliente: 'Necesito pocas piezas pero bien trabajadas: ritmo, gráficos, color, sonido.',
+    paraEditor: 'Trabajas menos piezas y cobras más por cada una. El plazo es más largo.',
+  },
+];
+
+export function infoModalidad(valor) {
+  return MODALIDADES.find((m) => m.valor === valor) || MODALIDADES[0];
+}
+
+/* ── Verificación ──────────────────────────────────────────────
+   El check confirma dos cosas que el cliente no puede comprobar
+   solo: que quien aparece en el perfil es quien edita, y que no
+   terceriza sin decirlo. Por eso es videollamada y no formulario.
+
+   La certificación de IA sale de la misma llamada, y es la única
+   forma en que la IA aparece en el producto: como una habilidad
+   verificada de una persona, nunca como algo que hace la app.    */
+export const VERIFICACION = {
+  GRATIS: true,
+  CANAL: 'WhatsApp',
+};
 
 export const ESPECIALIDADES = [
   { valor: 'podcast', etiqueta: 'Podcast' },

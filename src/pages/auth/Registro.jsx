@@ -13,19 +13,19 @@ import MarcoAuth from './MarcoAuth';
 
    Contrato con la landing:
      /registro?tipo=cliente   → emprendedor
-     /registro?tipo=clipero   → clipero
+     /registro?tipo=editor   → editor
    Si el parámetro viene, no se vuelve a preguntar: la persona ya
    lo dijo con el clic. Si falta o es inválido, se pregunta aquí.
    ══════════════════════════════════════════════════════════════ */
 
-const TIPOS_VALIDOS = ['cliente', 'clipero'];
+const TIPOS_VALIDOS = ['cliente', 'editor'];
 
 const COPY = {
   cliente: {
     titulo: 'Publica tu primer trabajo',
-    bajada: 'Dices cuánto pagas, los cliperos ofertan y tú eliges. Sin cotizaciones por WhatsApp.',
+    bajada: 'Dices cuánto pagas, los editores ofertan y tú eliges. Sin cotizaciones por WhatsApp.',
   },
-  clipero: {
+  editor: {
     titulo: 'Empieza a recibir trabajos',
     bajada: 'Ves el presupuesto antes de ofertar. Aceptas el precio o pones el tuyo.',
   },
@@ -102,7 +102,7 @@ export default function Registro() {
 
           <button
             type="button"
-            onClick={() => setTipo('clipero')}
+            onClick={() => setTipo('editor')}
             className="card card-hover p-5 text-left"
           >
             <p className="text-[15px] font-semibold">Edito video</p>

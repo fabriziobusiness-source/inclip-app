@@ -30,7 +30,7 @@ import { BadgeEstadoPostulacion } from '../../components/ui/Badge';
 
 export default function DetalleTrabajo() {
   const { id } = useParams();
-  const { usuario, perfilCliperoListo, clipero } = useAuth();
+  const { usuario, perfilEditorListo, editor } = useAuth();
   const navegar = useNavigate();
   const toast = useToast();
 
@@ -51,13 +51,13 @@ export default function DetalleTrabajo() {
     [id]
   );
 
-  const miPostulacion = (t?.postulaciones || []).find((p) => p.clipero_id === usuario.id);
+  const miPostulacion = (t?.postulaciones || []).find((p) => p.editor_id === usuario.id);
 
   // Previsualización en vivo de la contraoferta.
   const precioNum = Math.max(0, parseFloat(precioClip) || 0);
   const totalContra = t && precioNum > 0 ? precioNum * t.cantidad_clips : 0;
 
-  const puedeOfertar = perfilCliperoListo && clipero?.estado === 'aprobado';
+  const puedeOfertar = perfilEditorListo && editor?.estado === 'aprobado';
 
   function abrirOferta(tipo) {
     setError('');
@@ -114,7 +114,7 @@ export default function DetalleTrabajo() {
         titulo="Este trabajo ya no está disponible"
         mensaje="Puede que el cliente lo haya cerrado o que ya se lo hayan asignado a alguien."
         accion="Ver trabajos abiertos"
-        accionTo="/clipero/trabajos"
+        accionTo="/editor/trabajos"
       />
     );
   }
@@ -125,7 +125,7 @@ export default function DetalleTrabajo() {
 
   return (
     <>
-      <Link to="/clipero/trabajos" className="mb-4 inline-flex items-center gap-1.5 text-[13px] text-mut hover:text-paper">
+      <Link to="/editor/trabajos" className="mb-4 inline-flex items-center gap-1.5 text-[13px] text-mut hover:text-paper">
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -419,16 +419,16 @@ export default function DetalleTrabajo() {
         abierto={modal === 'perfil'}
         onCerrar={() => setModal(null)}
         titulo={
-          clipero?.estado === 'en_revision'
+          editor?.estado === 'en_revision'
             ? 'Tu perfil está en revisión'
-            : clipero?.estado === 'pausado'
+            : editor?.estado === 'pausado'
               ? 'Tu cuenta está pausada'
               : 'Completa tu perfil para ofertar'
         }
         descripcion={
-          clipero?.estado === 'en_revision'
+          editor?.estado === 'en_revision'
             ? 'Lo revisamos a mano. Te avisamos apenas quede aprobado.'
-            : clipero?.estado === 'pausado'
+            : editor?.estado === 'pausado'
               ? 'Escríbenos y lo revisamos contigo.'
               : 'Los clientes eligen viendo tu portafolio y tus calificaciones. Sin eso, tu oferta compite en desventaja.'
         }
@@ -437,9 +437,9 @@ export default function DetalleTrabajo() {
           <Button variante="ghost" className="flex-1" onClick={() => setModal(null)}>
             Seguir mirando
           </Button>
-          {clipero?.estado !== 'pausado' && (
-            <Button className="flex-1" to="/clipero/perfil">
-              {clipero?.estado === 'en_revision' ? 'Ver mi perfil' : 'Completar perfil'}
+          {editor?.estado !== 'pausado' && (
+            <Button className="flex-1" to="/editor/perfil">
+              {editor?.estado === 'en_revision' ? 'Ver mi perfil' : 'Completar perfil'}
             </Button>
           )}
         </div>

@@ -76,7 +76,7 @@ export default function Perfil() {
 
   return (
     <>
-      <Encabezado titulo="Mi perfil" bajada="Lo que ve el clipero cuando le llega tu trabajo." />
+      <Encabezado titulo="Mi perfil" bajada="Lo que ve el editor cuando le llega tu trabajo." />
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px] lg:items-start">
         <form onSubmit={guardar} className="space-y-4" noValidate>
@@ -105,7 +105,7 @@ export default function Perfil() {
               value={f.tipo_negocio}
               onChange={set('tipo_negocio')}
               placeholder="Agencia de marketing, podcast, tienda online…"
-              ayuda="Ayuda al clipero a entender el contexto antes de ofertar."
+              ayuda="Ayuda al editor a entender el contexto antes de ofertar."
             />
 
             <Select etiqueta="Ciudad" value={f.ciudad} onChange={set('ciudad')}>
@@ -146,7 +146,7 @@ export default function Perfil() {
           <Card className="p-5">
             <h2 className="text-[15px] font-semibold tight">¿Algo no cuadra?</h2>
             <p className="mt-2 text-[13px] leading-relaxed text-mut">
-              Escríbenos y lo revisamos: problemas con una entrega, un pago o un clipero.
+              Escríbenos y lo revisamos: problemas con una entrega, un pago o un editor.
             </p>
             <Button
               variante="ghost"

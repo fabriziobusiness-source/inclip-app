@@ -5,7 +5,7 @@ import { supabase, mensajeDeError } from '../../lib/supabase';
 import { useDatos } from '../../hooks/useDatos';
 import { subirImagen } from '../../lib/imagenes';
 import { useToast } from '../../components/ui/Toast';
-import { PAIS, ESPECIALIDADES, PLATAFORMAS_PORTAFOLIO, MARCA } from '../../config';
+import { PAIS, ESPECIALIDADES, PLATAFORMAS_PORTAFOLIO, MARCA, MODALIDADES, VERIFICACION } from '../../config';
 import { normalizarUrl, dominioDe } from '../../lib/formato';
 
 import { Encabezado } from '../../components/Layout';
@@ -16,11 +16,12 @@ import Avatar from '../../components/ui/Avatar';
 import Aviso from '../../components/ui/Aviso';
 import Modal from '../../components/ui/Modal';
 import StarRating from '../../components/ui/StarRating';
-import { BadgeEstadoClipero } from '../../components/ui/Badge';
+import { BadgeEstadoEditor } from '../../components/ui/Badge';
 import AvisoPerfil from '../../components/AvisoPerfil';
+import { SelloVerificado, SelloIA } from '../../components/Distintivos';
 
 export default function Perfil() {
-  const { perfil, clipero, usuario, refrescar, salir, perfilCliperoListo } = useAuth();
+  const { perfil, editor, usuario, refrescar, salir, perfilEditorListo } = useAuth();
   const toast = useToast();
 
   const [f, setF] = useState({
@@ -28,20 +29,34 @@ export default function Perfil() {
     descripcion: perfil?.descripcion || '',
     ciudad: perfil?.ciudad || '',
     handle_redes: perfil?.handle_redes || '',
-    especialidad: clipero?.especialidad || '',
-    herramientas_ia: clipero?.herramientas_ia || '',
-    link_portafolio: clipero?.link_portafolio || '',
-    capacidad_semanal: clipero?.capacidad_semanal ?? 3,
+    especialidad: editor?.especialidad || '',
+    herramientas_ia: editor?.herramientas_ia || '',
+    link_portafolio: editor?.link_portafolio || '',
+    capacidad_semanal: editor?.capacidad_semanal ?? 3,
+    modalidades: editor?.modalidades?.length ? editor.modalidades : ['volumen'],
   });
   const [error, setError] = useState('');
   const [guardando, setGuardando] = useState(false);
   const [subiendo, setSubiendo] = useState(false);
   const [modalPieza, setModalPieza] = useState(false);
+  const [modalVerificar, setModalVerificar] = useState(false);
 
   const set = (campo) => (e) => setF((p) => ({ ...p, [campo]: e.target.value }));
 
+  // Nunca se puede quedar sin ninguna: sin modalidad no vería un solo trabajo.
+  function alternarModalidad(valor) {
+    setF((p) => {
+      const activa = p.modalidades.includes(valor);
+      if (activa && p.modalidades.length === 1) return p;
+      return {
+        ...p,
+        modalidades: activa ? p.modalidades.filter((m) => m !== valor) : [...p.modalidades, valor],
+      };
+    });
+  }
+
   const { datos: piezas, recargar: recargarPortafolio } = useDatos(
-    () => supabase.from('portafolio').select('*').eq('clipero_id', usuario.id).order('orden'),
+    () => supabase.from('portafolio').select('*').eq('editor_id', usuario.id).order('orden'),
     [usuario.id]
   );
 
@@ -65,9 +80,9 @@ export default function Perfil() {
     setGuardando(true);
     try {
       // Un solo RPC: actualiza perfil y ficha, y mueve el estado a `en_revision`
-      // la primera vez. El clipero no puede escribir su propio estado — si
+      // la primera vez. El editor no puede escribir su propio estado — si
       // pudiera, se aprobaría solo.
-      const { error: err } = await supabase.rpc('completar_perfil_clipero', {
+      const { error: err } = await supabase.rpc('completar_perfil_editor', {
         p_foto_url: perfil.foto_url,
         p_descripcion: f.descripcion.trim() || null,
         p_ciudad: f.ciudad || null,
@@ -76,6 +91,7 @@ export default function Perfil() {
         p_herramientas: f.herramientas_ia.trim() || null,
         p_link_portafolio: normalizarUrl(f.link_portafolio),
         p_capacidad: parseInt(f.capacidad_semanal, 10) || null,
+        p_modalidades: f.modalidades,
       });
       if (err) throw err;
 
@@ -126,8 +142,8 @@ export default function Perfil() {
   }
 
   const puntual =
-    clipero?.trabajos_completados > 0
-      ? Math.round((clipero.entregas_a_tiempo / clipero.trabajos_completados) * 100)
+    editor?.trabajos_completados > 0
+      ? Math.round((editor.entregas_a_tiempo / editor.trabajos_completados) * 100)
       : null;
 
   return (
@@ -136,8 +152,8 @@ export default function Perfil() {
         titulo="Mi perfil"
         bajada="Esto es lo que ve el cliente al recibir tu oferta. Es lo que decide si te elige."
         accion={
-          perfilCliperoListo ? (
-            <Button variante="ghost" tamano="sm" to={`/clipero/perfil/${usuario.id}`}>
+          perfilEditorListo ? (
+            <Button variante="ghost" tamano="sm" to={`/editor/perfil/${usuario.id}`}>
               Ver como lo ve el cliente
             </Button>
           ) : null
@@ -197,6 +213,51 @@ export default function Perfil() {
                 placeholder="@tucuenta"
               />
             </div>
+          </Card>
+
+          <Card className="space-y-5 p-5">
+            <div>
+              <h2 className="text-[15px] font-semibold tight">Qué modalidades trabajas</h2>
+              <p className="mt-1 text-[13px] leading-relaxed text-muted">
+                Decide qué trabajos te aparecen. Puedes tener las dos activas si haces las dos.
+              </p>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              {MODALIDADES.map((m) => {
+                const activa = f.modalidades.includes(m.valor);
+                const ultima = activa && f.modalidades.length === 1;
+                return (
+                  <button
+                    key={m.valor}
+                    type="button"
+                    onClick={() => alternarModalidad(m.valor)}
+                    aria-pressed={activa}
+                    title={ultima ? 'Necesitas al menos una modalidad activa' : undefined}
+                    className={`border p-4 text-left transition-colors ${
+                      activa ? 'border-flame bg-flame/[0.08]' : 'border-line2 hover:border-flame/50'
+                    } ${ultima ? 'cursor-default' : ''}`}
+                  >
+                    <span className="flex items-center justify-between gap-2">
+                      <span className={`text-[14px] font-bold ${activa ? 'text-flame' : 'text-paper'}`}>
+                        {m.etiqueta}
+                      </span>
+                      <span className="text-[11px] uppercase tracking-[0.04em] text-muted">{m.apodo}</span>
+                    </span>
+                    <span className="mt-1.5 block text-[12.5px] leading-relaxed text-muted">
+                      {m.paraEditor}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {f.modalidades.length === 1 && (
+              <p className="text-[12.5px] leading-relaxed text-muted">
+                Con una sola activa ves la mitad de los trabajos. Actívala también si de verdad trabajas la otra,
+                no solo por ver más.
+              </p>
+            )}
           </Card>
 
           <Card className="space-y-5 p-5">
@@ -315,25 +376,89 @@ export default function Perfil() {
           <Card className="p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
               <h2 className="text-[15px] font-semibold tight">Tus métricas</h2>
-              <BadgeEstadoClipero estado={clipero?.estado || 'pendiente'} />
+              <BadgeEstadoEditor estado={editor?.estado || 'pendiente'} />
             </div>
 
             <StarRating
-              valor={clipero?.calificacion_promedio}
-              total={clipero?.total_calificaciones}
+              valor={editor?.calificacion_promedio}
+              total={editor?.total_calificaciones}
               tamano={16}
             />
 
             <dl className="mt-4 space-y-2.5 border-t border-line pt-4 text-[13px]">
               <div className="flex justify-between gap-3">
                 <dt className="text-mut">Trabajos completados</dt>
-                <dd className="num">{clipero?.trabajos_completados ?? 0}</dd>
+                <dd className="num">{editor?.trabajos_completados ?? 0}</dd>
               </div>
               <div className="flex justify-between gap-3">
                 <dt className="text-mut">Entregas a tiempo</dt>
                 <dd className="num">{puntual === null ? '-' : `${puntual}%`}</dd>
               </div>
             </dl>
+          </Card>
+
+          {/* ── Verificación ──
+              El check responde la pregunta que el cliente no puede resolver
+              mirando el portafolio: si quien va a editar es de verdad esta
+              persona. Por eso la entrevista es en vivo. */}
+          <Card className="p-5">
+            <h2 className="text-[15px] font-semibold tight">Verificación</h2>
+
+            {editor?.verificado ? (
+              <>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <SelloVerificado tamano={18} conTexto />
+                  {editor.certificado_ia && <SelloIA />}
+                </div>
+                <p className="mt-3 text-[13px] leading-relaxed text-muted">
+                  {editor.certificado_ia
+                    ? 'Tu perfil lleva el check y la certificación de IA. Aparecen junto a tu nombre en cada oferta que envías.'
+                    : 'Tu perfil lleva el check. Si quieres además la certificación de IA, escríbenos y agendamos otra llamada.'}
+                </p>
+              </>
+            ) : editor?.estado_verificacion === 'solicitada' ? (
+              <>
+                <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                  Tu solicitud está en cola. Te escribimos por {VERIFICACION.CANAL} para agendar la videollamada.
+                </p>
+                {editor.whatsapp && (
+                  <p className="num mt-2 text-[12.5px] text-muted">Te contactamos al {editor.whatsapp}</p>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                  El check confirma que quien edita eres tú y no un tercero. Es una videollamada corta por{' '}
+                  {VERIFICACION.CANAL} con un par de pruebas en vivo.
+                  {VERIFICACION.GRATIS && ' No cuesta nada.'}
+                </p>
+                <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                  En la misma llamada puedes certificar que dominas herramientas de IA en tu flujo.
+                </p>
+
+                {editor?.estado_verificacion === 'rechazada' && editor?.nota_verificacion && (
+                  <Aviso tipo="warn" className="mt-3">
+                    {editor.nota_verificacion}
+                  </Aviso>
+                )}
+
+                <Button
+                  tamano="sm"
+                  className="mt-4 w-full"
+                  type="button"
+                  onClick={() => setModalVerificar(true)}
+                  disabled={!perfilEditorListo}
+                >
+                  {editor?.estado_verificacion === 'rechazada' ? 'Volver a solicitar' : 'Solicitar verificación'}
+                </Button>
+
+                {!perfilEditorListo && (
+                  <p className="mt-2 text-[12px] text-muted">
+                    Completa tu perfil primero: en la llamada revisamos lo que tienes publicado.
+                  </p>
+                )}
+              </>
+            )}
           </Card>
 
           <Card className="p-5">
@@ -363,7 +488,90 @@ export default function Perfil() {
         orden={piezas?.length ?? 0}
         onListo={recargarPortafolio}
       />
+
+      <ModalVerificacion
+        abierto={modalVerificar}
+        onCerrar={() => setModalVerificar(false)}
+        whatsappActual={editor?.whatsapp || ''}
+        onListo={refrescar}
+      />
     </>
+  );
+}
+
+/* ── Solicitud de verificación ──────────────────────────────────
+   Solo pide el WhatsApp, porque la verificación de verdad pasa en
+   la videollamada, no en este formulario. Pedir más datos aquí
+   daría la impresión de que el formulario decide algo.            */
+function ModalVerificacion({ abierto, onCerrar, whatsappActual, onListo }) {
+  const toast = useToast();
+  const [whatsapp, setWhatsapp] = useState(whatsappActual);
+  const [error, setError] = useState('');
+  const [enviando, setEnviando] = useState(false);
+
+  async function enviar(e) {
+    e.preventDefault();
+    setError('');
+
+    if (whatsapp.replace(/\D/g, '').length < 8) {
+      setError('Escribe tu número de WhatsApp con el código de país.');
+      return;
+    }
+
+    setEnviando(true);
+    try {
+      const { error: err } = await supabase.rpc('solicitar_verificacion', {
+        p_whatsapp: whatsapp.trim(),
+      });
+      if (err) throw err;
+      toast.exito('Solicitud enviada. Te escribimos por WhatsApp para agendar.');
+      onListo();
+      onCerrar();
+    } catch (err) {
+      setError(mensajeDeError(err));
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <Modal
+      abierto={abierto}
+      onCerrar={onCerrar}
+      titulo="Solicitar verificación"
+      descripcion="Una videollamada corta para confirmar que quien edita eres tú."
+    >
+      <form onSubmit={enviar} className="space-y-4" noValidate>
+        <Input
+          etiqueta="Tu WhatsApp"
+          type="tel"
+          inputMode="tel"
+          requerido
+          value={whatsapp}
+          onChange={(e) => setWhatsapp(e.target.value)}
+          placeholder="+591 70000000"
+          ayuda="Con código de país. Es el único dato que necesitamos para agendar."
+          autoFocus
+        />
+
+        <Aviso tipo="info" titulo="Qué pasa en la llamada">
+          Te pedimos abrir tu proyecto y hacer un par de cosas en vivo: un corte, un subtítulo, un reencuadre.
+          No es un examen, es comprobar que el trabajo que muestras es tuyo. Si además usas herramientas de IA
+          en tu flujo, enséñanoslas y te certificamos eso también.
+        </Aviso>
+
+        {error && <Aviso tipo="error">{error}</Aviso>}
+
+        <div className="flex gap-2">
+          <Button type="button" variante="ghost" className="flex-1" onClick={onCerrar}>
+            Ahora no
+          </Button>
+          <Button type="submit" className="flex-1" cargando={enviando}>
+            Solicitar
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
@@ -399,7 +607,7 @@ function ModalPieza({ abierto, onCerrar, usuarioId, orden, onListo }) {
       if (miniatura) miniaturaUrl = await subirImagen('miniaturas', usuarioId, miniatura);
 
       const { error: err } = await supabase.from('portafolio').insert({
-        clipero_id: usuarioId,
+        editor_id: usuarioId,
         titulo: titulo.trim(),
         url_externa: urlLimpia,
         miniatura_url: miniaturaUrl,

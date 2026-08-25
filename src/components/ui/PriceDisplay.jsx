@@ -5,7 +5,7 @@ import { dinero, dineroUnitario, numero } from '../../lib/formato';
 
    El total va grande y protagónico; el precio por clip va debajo,
    pequeño y gris. "Bs 1.400" es una oferta, "70 Bs" es un
-   tarifario: el número grande es lo que hace que el clipero abra
+   tarifario: el número grande es lo que hace que el editor abra
    el trabajo. La jerarquía no se invierte ni se empata nunca.
    ══════════════════════════════════════════════════════════════ */
 

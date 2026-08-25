@@ -23,7 +23,7 @@ export default function MisTrabajos() {
       supabase
         .from('trabajos')
         .select('*, perfiles!trabajos_cliente_id_fkey(nombre), entregas(id, version, estado, revisiones(comentario)), calificaciones(de_perfil_id)')
-        .eq('clipero_id', usuario.id)
+        .eq('editor_id', usuario.id)
         .order('creado_en', { ascending: false }),
     [usuario.id]
   );
@@ -54,7 +54,7 @@ export default function MisTrabajos() {
 
             <h3 className="truncate text-[15px] font-semibold tight">{t.titulo}</h3>
             <p className="mt-1 text-[12.5px] text-mut">
-              {t.perfiles?.nombre || 'Cliente'} · {info.descripcionClipero}
+              {t.perfiles?.nombre || 'Cliente'} · {info.descripcionEditor}
             </p>
 
             {ESTADOS_ACTIVOS.includes(t.estado) && (
@@ -80,7 +80,7 @@ export default function MisTrabajos() {
             </p>
             {t.comision_monto > 0 && (
               <p className="num mt-1 text-[11.5px] text-mut">
-                Recibes {dinero(t.monto_clipero)} tras comisión
+                Recibes {dinero(t.monto_editor)} tras comisión
               </p>
             )}
             {Number(t.comision_monto) === 0 && t.precio_acordado && (
@@ -89,7 +89,7 @@ export default function MisTrabajos() {
 
             <div className="mt-3 flex flex-wrap justify-end gap-2">
               {['asignado', 'en_progreso', 'en_ajustes'].includes(t.estado) && (
-                <Button tamano="sm" to={`/clipero/entregar/${t.id}`}>
+                <Button tamano="sm" to={`/editor/entregar/${t.id}`}>
                   {t.estado === 'en_ajustes' ? 'Volver a entregar' : 'Entregar'}
                 </Button>
               )}
@@ -129,7 +129,7 @@ export default function MisTrabajos() {
           titulo="Todavía no te asignaron nada"
           mensaje="Cuando un cliente acepte una de tus ofertas, el trabajo aparece aquí con el material y la fecha límite."
           accion="Ver trabajos disponibles"
-          accionTo="/clipero/trabajos"
+          accionTo="/editor/trabajos"
         />
       ) : (
         <div className="space-y-6">

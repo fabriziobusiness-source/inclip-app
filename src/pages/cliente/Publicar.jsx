@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase, mensajeDeError } from '../../lib/supabase';
 import { useToast } from '../../components/ui/Toast';
-import { TIPOS_TRABAJO, PLATAFORMAS_PUBLICACION, REGLAS } from '../../config';
+import { TIPOS_TRABAJO, PLATAFORMAS_PUBLICACION, REGLAS, MODALIDADES } from '../../config';
 import { dinero, dineroUnitario, normalizarUrl } from '../../lib/formato';
 import { Encabezado } from '../../components/Layout';
 import Card from '../../components/ui/Card';
@@ -16,7 +16,7 @@ import Aviso from '../../components/ui/Aviso';
    La app deriva el precio por clip y se lo muestra mientras
    escribe. Nunca al revés: pensar "1.400 por el proyecto" es más
    fácil que pensar "70 por clip", y el total es lo que engancha
-   al clipero cuando ve la tarjeta.
+   al editor cuando ve la tarjeta.
    ══════════════════════════════════════════════════════════════ */
 
 function enNDias(n) {
@@ -34,6 +34,7 @@ export default function Publicar() {
     titulo: '',
     descripcion: '',
     tipo: 'clips',
+    modalidad: 'volumen',
     cantidad_clips: '20',
     precio_total: '',
     fecha_limite: enNDias(7),
@@ -101,6 +102,7 @@ export default function Publicar() {
           titulo: f.titulo.trim(),
           descripcion: f.descripcion.trim(),
           tipo: f.tipo,
+          modalidad: f.modalidad,
           cantidad_clips: cantidad,
           precio_total: total,
           fecha_limite: f.fecha_limite,
@@ -113,7 +115,7 @@ export default function Publicar() {
         .single();
 
       if (err) throw err;
-      toast.exito('Tu trabajo ya está publicado. Los cliperos empiezan a ofertar.');
+      toast.exito('Tu trabajo ya está publicado. Los editores empiezan a ofertar.');
       navegar(`/cliente/trabajos/${data.id}`, { replace: true });
     } catch (err) {
       setError(mensajeDeError(err));
@@ -125,11 +127,49 @@ export default function Publicar() {
     <>
       <Encabezado
         titulo="Publicar un trabajo"
-        bajada="Di cuánto pagas por todo el proyecto. Los cliperos aceptan tu precio o te contraofertan, y tú eliges."
+        bajada="Di cuánto pagas por todo el proyecto. Los editores aceptan tu precio o te contraofertan, y tú eliges."
       />
 
       <form onSubmit={enviar} className="grid gap-4 lg:grid-cols-[1fr_320px] lg:items-start" noValidate>
         <div className="space-y-4">
+          {/* ── Modalidad ──
+              Va primero porque cambia todo lo demás: quién ve el trabajo,
+              qué precio es razonable y qué plazo tiene sentido pedir. */}
+          <Card className="space-y-4 p-5">
+            <h2 className="text-[15px] font-semibold tight">Qué tipo de trabajo es</h2>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              {MODALIDADES.map((m) => {
+                const activa = f.modalidad === m.valor;
+                return (
+                  <button
+                    key={m.valor}
+                    type="button"
+                    onClick={() => setF((p) => ({ ...p, modalidad: m.valor }))}
+                    aria-pressed={activa}
+                    className={`border p-4 text-left transition-colors ${
+                      activa
+                        ? 'border-flame bg-flame/[0.08]'
+                        : 'border-line2 hover:border-flame/50'
+                    }`}
+                  >
+                    <span className={`block text-[14px] font-bold ${activa ? 'text-flame' : 'text-paper'}`}>
+                      {m.etiqueta}
+                    </span>
+                    <span className="mt-1 block text-[12.5px] text-muted">{m.resumen}</span>
+                    <span className="mt-2 block text-[12.5px] leading-relaxed text-muted">
+                      {m.paraCliente}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <p className="text-[12.5px] leading-relaxed text-muted">
+              Solo lo ven los editores que trabajan esa modalidad. Elegir la que no es te deja sin ofertas.
+            </p>
+          </Card>
+
           {/* ── Qué necesitas ── */}
           <Card className="space-y-4 p-5">
             <h2 className="text-[15px] font-semibold tight">Qué necesitas</h2>
@@ -163,7 +203,7 @@ export default function Publicar() {
                 min={hoy}
                 value={f.fecha_limite}
                 onChange={set('fecha_limite')}
-                ayuda={`Los cliperos suelen entregar en ${REGLAS.PLAZO_ENTREGA_HORAS} horas.`}
+                ayuda={`Los editores suelen entregar en ${REGLAS.PLAZO_ENTREGA_HORAS} horas.`}
               />
             </div>
           </Card>
@@ -209,7 +249,7 @@ export default function Publicar() {
                     {dineroUnitario(Math.round(porClip * 100) / 100)} por clip · {cantidad} clips
                   </p>
                   <p className="mt-3 text-[12.5px] leading-relaxed text-mut">
-                    Así lo verá el clipero. El número grande es lo que mira primero.
+                    Así lo verá el editor. El número grande es lo que mira primero.
                   </p>
                 </>
               ) : (
@@ -220,13 +260,13 @@ export default function Publicar() {
             </div>
           </Card>
 
-          {/* ── Publicación en cuentas del clipero ── */}
+          {/* ── Publicación en cuentas del editor ── */}
           <Card className="space-y-4 p-5">
             <h2 className="text-[15px] font-semibold tight">Publicación</h2>
 
             <Checkbox
-              etiqueta="¿Quieres que el clipero también publique los clips en sus propias cuentas?"
-              ayuda="Por defecto no: el clipero solo te entrega los archivos y tú publicas."
+              etiqueta="¿Quieres que el editor también publique los clips en sus propias cuentas?"
+              ayuda="Por defecto no: el editor solo te entrega los archivos y tú publicas."
               checked={f.requiere_publicacion}
               onChange={set('requiere_publicacion')}
             />
@@ -256,7 +296,7 @@ export default function Publicar() {
                 </div>
                 <p className="mt-3 text-[12.5px] leading-relaxed text-mut">
                   Este trabajo llevará un badge de <strong className="text-paper">Incluye publicación</strong>. Cambia
-                  el alcance, así que el clipero debe verlo antes de ofertar.
+                  el alcance, así que el editor debe verlo antes de ofertar.
                 </p>
               </div>
             )}
@@ -295,7 +335,7 @@ export default function Publicar() {
               </li>
               <li className="flex gap-2">
                 <span className="text-cy" aria-hidden="true">·</span>
-                Cada clipero puede ofertar una sola vez.
+                Cada editor puede ofertar una sola vez.
               </li>
               <li className="flex gap-2">
                 <span className="text-cy" aria-hidden="true">·</span>

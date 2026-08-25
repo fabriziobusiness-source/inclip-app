@@ -14,16 +14,16 @@ import ClientePublicar from './pages/cliente/Publicar';
 import ClienteDetalle from './pages/cliente/DetalleTrabajo';
 import ClientePerfil from './pages/cliente/Perfil';
 
-import CliperoTrabajos from './pages/clipero/Trabajos';
-import CliperoDetalle from './pages/clipero/DetalleTrabajo';
-import CliperoPostulaciones from './pages/clipero/Postulaciones';
-import CliperoMisTrabajos from './pages/clipero/MisTrabajos';
-import CliperoEntregar from './pages/clipero/Entregar';
-import CliperoSaldo from './pages/clipero/Saldo';
-import CliperoPerfil from './pages/clipero/Perfil';
+import EditorTrabajos from './pages/editor/Trabajos';
+import EditorDetalle from './pages/editor/DetalleTrabajo';
+import EditorPostulaciones from './pages/editor/Postulaciones';
+import EditorMisTrabajos from './pages/editor/MisTrabajos';
+import EditorEntregar from './pages/editor/Entregar';
+import EditorSaldo from './pages/editor/Saldo';
+import EditorPerfil from './pages/editor/Perfil';
 
 import AdminMetricas from './pages/admin/Metricas';
-import AdminCliperos from './pages/admin/Cliperos';
+import AdminEditores from './pages/admin/Editores';
 import AdminTrabajos from './pages/admin/Trabajos';
 import AdminRetiros from './pages/admin/Retiros';
 
@@ -95,7 +95,7 @@ function Privado({ rolesPermitidos }) {
 }
 
 export function inicioDe(rol) {
-  if (rol === 'clipero') return '/clipero/trabajos';
+  if (rol === 'editor') return '/editor/trabajos';
   if (rol === 'admin') return '/admin/metricas';
   if (rol === 'cliente') return '/cliente/trabajos';
   return '/entrar';
@@ -147,28 +147,28 @@ export default function App() {
             <Route path="/cliente/perfil" element={<ClientePerfil />} />
           </Route>
 
-          {/* ── Clipero ── */}
-          <Route element={<Privado rolesPermitidos={['clipero']} />}>
-            <Route path="/clipero/trabajos" element={<CliperoTrabajos />} />
-            <Route path="/clipero/trabajos/:id" element={<CliperoDetalle />} />
-            <Route path="/clipero/postulaciones" element={<CliperoPostulaciones />} />
-            <Route path="/clipero/mis-trabajos" element={<CliperoMisTrabajos />} />
-            <Route path="/clipero/entregar/:id" element={<CliperoEntregar />} />
-            <Route path="/clipero/saldo" element={<CliperoSaldo />} />
-            <Route path="/clipero/perfil" element={<CliperoPerfil />} />
+          {/* ── Editor ── */}
+          <Route element={<Privado rolesPermitidos={['editor']} />}>
+            <Route path="/editor/trabajos" element={<EditorTrabajos />} />
+            <Route path="/editor/trabajos/:id" element={<EditorDetalle />} />
+            <Route path="/editor/postulaciones" element={<EditorPostulaciones />} />
+            <Route path="/editor/mis-trabajos" element={<EditorMisTrabajos />} />
+            <Route path="/editor/entregar/:id" element={<EditorEntregar />} />
+            <Route path="/editor/saldo" element={<EditorSaldo />} />
+            <Route path="/editor/perfil" element={<EditorPerfil />} />
           </Route>
 
           {/* ── Admin ── */}
           <Route element={<Privado rolesPermitidos={['admin']} />}>
             <Route path="/admin/metricas" element={<AdminMetricas />} />
-            <Route path="/admin/cliperos" element={<AdminCliperos />} />
+            <Route path="/admin/editores" element={<AdminEditores />} />
             <Route path="/admin/trabajos" element={<AdminTrabajos />} />
             <Route path="/admin/retiros" element={<AdminRetiros />} />
           </Route>
 
           {/* ── Perfil público: lo abre cualquiera con sesión ── */}
           <Route element={<Privado />}>
-            <Route path="/clipero/perfil/:id" element={<PerfilPublico />} />
+            <Route path="/editor/perfil/:id" element={<PerfilPublico />} />
           </Route>
 
           <Route path="*" element={<NoEncontrado />} />

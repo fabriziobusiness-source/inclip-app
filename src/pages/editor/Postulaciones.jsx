@@ -18,7 +18,7 @@ export default function Postulaciones() {
     return supabase
       .from('postulaciones')
       .select('*, trabajos(id, titulo, estado, cantidad_clips, precio_total, fecha_limite)')
-      .eq('clipero_id', usuario.id)
+      .eq('editor_id', usuario.id)
       .order('creado_en', { ascending: false });
   }, [usuario.id]);
 
@@ -37,7 +37,7 @@ export default function Postulaciones() {
           titulo="Todavía no ofertaste"
           mensaje="Mira los trabajos abiertos: el presupuesto está a la vista antes de que decidas nada."
           accion="Ver trabajos disponibles"
-          accionTo="/clipero/trabajos"
+          accionTo="/editor/trabajos"
         />
       ) : (
         <div className="space-y-2">
@@ -57,7 +57,7 @@ export default function Postulaciones() {
 
                     {t ? (
                       <Link
-                        to={ganada ? '/clipero/mis-trabajos' : `/clipero/trabajos/${t.id}`}
+                        to={ganada ? '/editor/mis-trabajos' : `/editor/trabajos/${t.id}`}
                         className="block truncate text-[14.5px] font-semibold hover:text-cy"
                       >
                         {t.titulo}
@@ -86,7 +86,7 @@ export default function Postulaciones() {
 
                 {ganada && (
                   <p className="mt-3 border-t border-line pt-3 text-[12.5px] text-flame">
-                    Te eligieron. Está en <Link to="/clipero/mis-trabajos" className="underline">En curso</Link>.
+                    Te eligieron. Está en <Link to="/editor/mis-trabajos" className="underline">En curso</Link>.
                   </p>
                 )}
               </Card>

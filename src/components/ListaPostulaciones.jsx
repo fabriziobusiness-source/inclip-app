@@ -5,6 +5,7 @@ import Avatar from './ui/Avatar';
 import Button from './ui/Button';
 import StarRating from './ui/StarRating';
 import { BadgeInfo, BadgeEstadoPostulacion } from './ui/Badge';
+import { SelloVerificado, SelloIA } from './Distintivos';
 import { DiferenciaPrecio } from './ui/PriceDisplay';
 
 /* Las ofertas se ordenan por precio o por calificación porque son los dos
@@ -22,10 +23,10 @@ export default function ListaPostulaciones({ postulaciones, presupuesto, onAcept
   const lista = [...(postulaciones || [])].sort((a, b) => {
     if (orden === 'precio') return Number(a.precio_total) - Number(b.precio_total);
     if (orden === 'calificacion') {
-      const ca = a.cliperos?.calificacion_promedio ?? 0;
-      const cb = b.cliperos?.calificacion_promedio ?? 0;
+      const ca = a.editores?.calificacion_promedio ?? 0;
+      const cb = b.editores?.calificacion_promedio ?? 0;
       if (cb !== ca) return cb - ca;
-      return (b.cliperos?.total_calificaciones ?? 0) - (a.cliperos?.total_calificaciones ?? 0);
+      return (b.editores?.total_calificaciones ?? 0) - (a.editores?.total_calificaciones ?? 0);
     }
     return new Date(b.creado_en) - new Date(a.creado_en);
   });
@@ -53,8 +54,8 @@ export default function ListaPostulaciones({ postulaciones, presupuesto, onAcept
 
       <div className="space-y-2">
         {lista.map((p) => {
-          const perfil = p.cliperos?.perfiles;
-          const metricas = p.cliperos;
+          const perfil = p.editores?.perfiles;
+          const metricas = p.editores;
           return (
             <div key={p.id} className="card p-4">
               <div className="flex flex-wrap items-start gap-4">
@@ -62,7 +63,11 @@ export default function ListaPostulaciones({ postulaciones, presupuesto, onAcept
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="truncate text-[14.5px] font-semibold">{perfil?.nombre || 'Clipero'}</p>
+                    <p className="truncate text-[14.5px] font-semibold">{perfil?.nombre || 'Editor'}</p>
+                    {/* El check va pegado al nombre, que es donde el cliente
+                        mira antes que al precio. */}
+                    {metricas?.verificado && <SelloVerificado tamano={15} />}
+                    {metricas?.certificado_ia && <SelloIA />}
                     {/* Neutro a propósito: el verde de "acepta tu precio" ya lo
                         pone DiferenciaPrecio abajo. Repetirlo aquí en color
                         diluiría el único significado que tiene ese verde. */}
@@ -110,7 +115,7 @@ export default function ListaPostulaciones({ postulaciones, presupuesto, onAcept
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-2 sm:justify-end">
-                    <Button variante="ghost" tamano="sm" to={`/clipero/perfil/${p.clipero_id}`}>
+                    <Button variante="ghost" tamano="sm" to={`/editor/perfil/${p.editor_id}`}>
                       Ver perfil
                     </Button>
                     {editable && p.estado === 'pendiente' && (
