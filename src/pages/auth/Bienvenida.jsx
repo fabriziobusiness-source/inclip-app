@@ -53,8 +53,11 @@ export default function Bienvenida() {
       });
       if (err) throw err;
       await refrescar();
+      // El enrutador se lleva la pantalla en cuanto el perfil llega completo.
+      // Si no ocurre, el `finally` evita que el botón gire para siempre.
     } catch (err) {
       setError(mensajeDeError(err));
+    } finally {
       setEnviando(false);
     }
   }

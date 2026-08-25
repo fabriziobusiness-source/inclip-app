@@ -520,6 +520,16 @@ begin
   if p_rol not in ('cliente', 'editor') then raise exception 'Rol inválido.'; end if;
   if char_length(trim(p_nombre)) < 2 then raise exception 'Escribe tu nombre.'; end if;
 
+  -- Normalmente la fila ya existe: la crea un trigger al registrarse. Puede
+  -- faltar si la cuenta de auth es anterior a esta tabla (reconstruir el
+  -- esquema borra `perfiles` pero no toca `auth.users`) o si el trigger falló.
+  -- Sin esto, esa persona queda sin forma de entrar: el UPDATE de abajo no
+  -- afecta ninguna fila, no da error, y el insert en `editores` revienta
+  -- contra la llave foránea.
+  insert into public.perfiles (id, rol, nombre)
+  values (auth.uid(), p_rol, trim(p_nombre))
+  on conflict (id) do nothing;
+
   select rol into v_rol_actual from public.perfiles where id = auth.uid();
 
   -- El rol se define una sola vez. Cambiarlo después dejaría trabajos huérfanos.
@@ -1260,6 +1270,11 @@ grant execute on function public.admin_metricas() to authenticated;
 --
 --    update public.editores set estado = 'aprobado' where estado in ('pendiente','en_revision');
 --
---  Aprobar NO es lo mismo que verificar. Aprobar deja ofertar; el check azul
+--  Aprobar NO es lo mismo que verificar. Aprobar deja ofertar; el check
 --  sale de la videollamada y se resuelve desde Admin → Editores.
+--
+--  ⚠️ Reconstruir el esquema borra `public.perfiles` pero NO `auth.users`.
+--  Las cuentas anteriores quedan huérfanas. `confirmar_perfil` las recompone
+--  sola en el siguiente ingreso, así que no hace falta borrarlas. Si aun así
+--  quieres empezar de cero, en Authentication → Users puedes eliminarlas.
 -- ═══════════════════════════════════════════════════════════════════════════
