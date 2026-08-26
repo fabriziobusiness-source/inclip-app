@@ -7,11 +7,7 @@ export default function MarcoAuth({ titulo, bajada, children }) {
       <div className="w-full max-w-[420px]">
         <div className="mb-8 text-center">
           <span className="inline-flex items-center gap-2">
-            <span
-              className="inline-block h-7 w-7 rounded-lg"
-              style={{ background: '#FF5A1F' }}
-              aria-hidden="true"
-            />
+            <img src="/logo-inclip.webp" alt="" width="28" height="22" className="h-7 w-auto" />
             <span className="text-[19px] font-bold tight">{MARCA.NOMBRE}</span>
           </span>
         </div>

@@ -66,11 +66,7 @@ export default function Layout() {
       <header className="sticky top-0 z-30 border-b border-line bg-ink/90 backdrop-blur-md lg:hidden">
         <div className="flex h-14 items-center justify-between px-4">
           <Link to={inicio} className="flex items-center gap-2">
-            <span
-              className="h-6 w-6 rounded-md"
-              style={{ background: '#FF5A1F' }}
-              aria-hidden="true"
-            />
+            <img src="/logo-inclip.webp" alt="" width="24" height="19" className="h-6 w-auto" />
             <span className="text-[16px] font-bold tight">{MARCA.NOMBRE}</span>
           </Link>
           <Link to={rutaPerfil} aria-label="Mi perfil">
@@ -82,11 +78,7 @@ export default function Layout() {
       {/* ── Sidebar en escritorio ───────────────────────────── */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[220px] flex-col border-r border-line bg-ink2/60 px-3 py-5 lg:flex">
         <Link to={inicio} className="mb-7 flex items-center gap-2.5 px-2">
-          <span
-            className="h-7 w-7 rounded-lg"
-            style={{ background: '#FF5A1F' }}
-            aria-hidden="true"
-          />
+          <img src="/logo-inclip.webp" alt="" width="28" height="22" className="h-7 w-auto" />
           <span className="text-[18px] font-bold tight">{MARCA.NOMBRE}</span>
         </Link>
 
